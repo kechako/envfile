@@ -90,3 +90,40 @@ func Parse(r io.Reader) (Envs, error) {
 
 	return envs, nil
 }
+
+// LoadEnvs sets environment variables from envs.
+func LoadEnvs(envs Envs) error {
+	for key, value := range envs.Envs() {
+		err := os.Setenv(key, value)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Parse reads data from the r, parses the content in the key=value format, and sets environment variables.
+func Load(r io.Reader) error {
+	envs, err := Parse(r)
+	if err != nil {
+		return err
+	}
+	err = LoadEnvs(envs)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// ParseFile reads the named file, parses the content in the key=value format, and sets environment variables.
+func LoadFile(name string) error {
+	envs, err := ParseFile(name)
+	if err != nil {
+		return err
+	}
+	err = LoadEnvs(envs)
+	if err != nil {
+		return err
+	}
+	return nil
+}

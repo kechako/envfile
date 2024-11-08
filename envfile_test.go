@@ -3,6 +3,7 @@ package envfile
 import (
 	"errors"
 	"maps"
+	"os"
 	"slices"
 	"testing"
 )
@@ -94,6 +95,21 @@ func TestParseFile(t *testing.T) {
 				t.Errorf("ParseFile(): got (%#v, %v), want (%#v, %v)", envs, err, tt.envs, tt.err)
 			}
 		})
+	}
+}
+
+func TestLoadEnvs(t *testing.T) {
+	err := LoadEnvs(envsTest.envs)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for key, value := range envsTest.envs.Envs() {
+		got := os.Getenv(key)
+		want := value
+		if got != want {
+			t.Errorf("os.Getenv(\"%s\"): got %s, want %s", key, got, want)
+		}
 	}
 }
 
